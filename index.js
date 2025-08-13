@@ -11,11 +11,16 @@ function multiply(a, b) {
   return a * b;
 }
 
+function subtract(a, b) {
+  return a - b;
+}
+
 // Export functions for testing
 module.exports = {
   greet,
   add,
-  multiply
+  multiply,
+  subtract
 };
 
 // Start a tiny HTTP server only when running directly (not when required by tests)

@@ -1,4 +1,4 @@
-const { greet, add, multiply } = require('../index');
+const { greet, add, multiply, subtract } = require('../index');
 
 describe('Basic Functions', () => {
   test('greet function should return correct greeting', () => {
@@ -16,5 +16,11 @@ describe('Basic Functions', () => {
     expect(multiply(4, 5)).toBe(20);
     expect(multiply(0, 5)).toBe(0);
     expect(multiply(-2, 3)).toBe(-6);
+  });
+
+  test('subtract function should subtract two numbers correctly', () => {
+    expect(subtract(5, 2)).toBe(3);
+    expect(subtract(0, 5)).toBe(-5);
+    expect(subtract(-2, -3)).toBe(1);
   });
 });
