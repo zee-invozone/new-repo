@@ -6,6 +6,10 @@
 echo "🚀 Testing Pipeline Components Locally"
 echo "======================================"
 
+# Ensure we run from the repository root regardless of invocation path
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+cd "$SCRIPT_DIR/.." || exit 1
+
 # Colors for output
 RED='\033[0;31m'
 GREEN='\033[0;32m'
@@ -60,7 +64,11 @@ fi
 
 echo -e "\n${YELLOW}2. Installing Dependencies${NC}"
 echo "----------------------------"
-npm ci
+if [ -f package-lock.json ]; then
+    npm ci
+else
+    npm install
+fi
 print_status $? "Dependencies installed"
 
 echo -e "\n${YELLOW}3. Running Linting${NC}"

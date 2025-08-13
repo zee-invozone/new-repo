@@ -1,0 +1,19 @@
+{
+  "name": "pipeline-practice",
+  "version": "1.0.0",
+  "description": "A repository to practice CI/CD pipelines",
+  "main": "index.js",
+  "scripts": {
+    "test": "jest",
+    "lint": "eslint .",
+    "build": "mkdir -p dist && cp index.js dist/index.js",
+    "start": "node index.js"
+  },
+  "keywords": ["ci", "cd", "pipeline", "practice"],
+  "author": "Zeeshan Farooq",
+  "license": "MIT",
+  "devDependencies": {
+    "jest": "^29.7.0",
+    "eslint": "^8.56.0"
+  }
+}

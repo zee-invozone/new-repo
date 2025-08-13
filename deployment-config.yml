@@ -1,0 +1,80 @@
+# Deployment Configuration
+# This file contains environment-specific configurations for your CI/CD pipeline
+
+environments:
+  staging:
+    name: "Staging Environment"
+    url: "https://staging.yourdomain.com"
+    branch: "develop"
+    auto_deploy: true
+    variables:
+      NODE_ENV: "staging"
+      API_URL: "https://staging-api.yourdomain.com"
+      LOG_LEVEL: "debug"
+    
+  production:
+    name: "Production Environment"
+    url: "https://yourdomain.com"
+    branch: "main"
+    auto_deploy: false
+    requires_approval: true
+    variables:
+      NODE_ENV: "production"
+      API_URL: "https://api.yourdomain.com"
+      LOG_LEVEL: "info"
+
+# Docker registry configuration
+docker:
+  registry: "ghcr.io"
+  image_name: "your-username/pipeline-practice"
+  tags:
+    - "latest"
+    - "{{branch}}"
+    - "{{sha}}"
+
+# Deployment strategies
+deployment_strategies:
+  staging:
+    method: "rolling"
+    replicas: 2
+    health_check: "/health"
+    
+  production:
+    method: "blue-green"
+    replicas: 3
+    health_check: "/health"
+    rollback_enabled: true
+
+# Notification settings
+notifications:
+  slack:
+    webhook_url: "${{ secrets.SLACK_WEBHOOK }}"
+    channel: "#deployments"
+    
+  email:
+    recipients: ["devops@yourdomain.com"]
+    
+  teams:
+    webhook_url: "${{ secrets.TEAMS_WEBHOOK }}"
+
+# Security settings
+security:
+  scan_dependencies: true
+  scan_container: true
+  vulnerability_threshold: "high"
+  auto_block: false
+
+# Monitoring and observability
+monitoring:
+  metrics:
+    - "response_time"
+    - "error_rate"
+    - "throughput"
+    - "cpu_usage"
+    - "memory_usage"
+    
+  alerts:
+    error_rate_threshold: 5
+    response_time_threshold: 2000
+    cpu_threshold: 80
+    memory_threshold: 85
