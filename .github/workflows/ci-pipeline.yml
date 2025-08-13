@@ -23,36 +23,20 @@ jobs:
       with:
         node-version: '18'
         cache: 'npm'
-        
+      
     - name: Install dependencies
       run: |
-        echo "Installing dependencies..."
-        # This is a placeholder - you can modify based on your project type
-        # npm install
-        # or
-        # pip install -r requirements.txt
-        # or
-        # mvn install
-        
+        if [ -f package-lock.json ]; then
+          npm ci
+        else
+          npm install
+        fi
+      
     - name: Run tests
-      run: |
-        echo "Running tests..."
-        # Placeholder for your test commands
-        # npm test
-        # or
-        # python -m pytest
-        # or
-        # mvn test
-        
+      run: npm test
+      
     - name: Build project
-      run: |
-        echo "Building project..."
-        # Placeholder for your build commands
-        # npm run build
-        # or
-        # python setup.py build
-        # or
-        # mvn package
+      run: npm run build
         
     - name: Upload build artifacts
       uses: actions/upload-artifact@v4
@@ -70,21 +54,26 @@ jobs:
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
-      
-    - name: Run linting
+    
+    - name: Set up Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+        cache: 'npm'
+
+    - name: Install dependencies
       run: |
-        echo "Running code linting..."
-        # Placeholder for linting commands
-        # npm run lint
-        # or
-        # flake8 .
-        # or
-        # mvn checkstyle:check
+        if [ -f package-lock.json ]; then
+          npm ci
+        else
+          npm install
+        fi
+    
+    - name: Run linting
+      run: npm run lint
         
     - name: Run security scan
-      run: |
-        echo "Running security scan..."
-        # Placeholder for security scanning
+      run: npm audit --audit-level=moderate
         
   # Deploy to Staging
   deploy-staging:
