@@ -15,16 +15,60 @@ Welcome to your CI/CD pipeline practice repository! This repository is designed 
 
 ```
 ├── .github/workflows/          # GitHub Actions workflows
-│   ├── ci-pipeline.yml        # Basic CI/CD pipeline
-│   └── advanced-pipeline.yml  # Advanced pipeline with matrix builds
-├── .gitlab-ci.yml             # GitLab CI configuration
-├── src/                       # Source code
-├── test/                      # Test files
-├── Dockerfile                 # Docker container configuration
-├── package.json               # Node.js project configuration
-├── .eslintrc.js              # ESLint configuration
-└── README.md                  # This file
+│   ├── ci-pipeline.yml         # Basic CI pipeline (build, test, lint, deploy)
+│   └── advanced-pipeline.yml   # Advanced pipeline (matrix, Docker, optional Snyk)
+├── .gitlab-ci.yml              # GitLab CI configuration
+├── test/                       # Jest tests
+├── scripts/test-pipeline.sh    # Local pipeline test script
+├── Dockerfile                  # Docker container configuration
+├── index.js                    # Simple Node.js app (also serves HTTP when run)
+├── package.json                # Node.js project configuration
+├── .eslintrc.js                # ESLint configuration
+├── .gitignore                  # Git ignore rules
+└── README.md                   # This file
 ```
+
+## 🧩 How This Was Created (Step-by-step)
+
+1. Initialized an empty repo with a simple `Read.md` and created a minimal Node.js app (`index.js`).
+2. Added testing with Jest (`test/index.test.js`) and linting with ESLint (`.eslintrc.js`).
+3. Created a basic GitHub Actions workflow at `.github/workflows/ci-pipeline.yml`.
+   - Triggers: any branch push or PR; also supports manual run (workflow_dispatch).
+   - Steps: checkout → setup Node 18 → install deps → run tests → build → upload artifacts → optional deploy.
+4. Created an advanced workflow `.github/workflows/advanced-pipeline.yml`.
+   - Matrix tests (Node 16/18/20 on Linux/Windows), npm audit, build/package, Docker build+push (GHCR), deploy jobs.
+   - Snyk step runs only if `SNYK_TOKEN` secret is set; otherwise it prints a skip message.
+5. Added a Dockerfile (multi-stage, non-root user, healthcheck) for container practice.
+6. Added `.gitignore` and stopped tracking `node_modules`/`dist` in git.
+7. Ensured CI works without a lockfile cache requirement by disabling `setup-node` cache and running real `npm ci/install`.
+8. Added a tiny HTTP server in `index.js` so the container can run and expose `/health`.
+9. Added `scripts/test-pipeline.sh` to run lint, tests, build, and optional Docker build locally.
+10. Made a small feature change (`subtract()` + tests) to demonstrate CI runs on push.
+
+## 🔍 How It Works
+
+- Basic workflow (`ci-pipeline.yml`)
+  - Trigger: any branch push/PR, or manual run from Actions tab.
+  - Jobs:
+    - build-and-test: checkout → setup Node 18 → install (prefers npm ci if lockfile exists) → `npm test` → `npm run build` → upload `dist/` as artifact.
+    - code-quality: install deps → `npm run lint` → `npm audit --audit-level=moderate`.
+    - deploy-staging: runs only on `develop` branch.
+    - deploy-production: runs only on `main` branch.
+
+- Advanced workflow (`advanced-pipeline.yml`)
+  - Triggers: push, PR, and manual `workflow_dispatch` with environment input.
+  - Jobs:
+    - test-matrix: matrix across Node 16/18/20 and Ubuntu/Windows; runs tests, lint; uploads artifacts.
+    - security-scan: `npm audit`; Snyk scan runs only if `SNYK_TOKEN` secret is configured.
+    - build: installs deps, runs build, creates a tarball, uploads artifacts.
+    - docker: builds and pushes a Docker image to GHCR using metadata-based tags.
+    - deploy-staging / deploy-production: echo placeholders showing where to add your deploy commands.
+    - notify: prints success/failure summary.
+
+Notes:
+- Lockfile: If `package-lock.json` exists, CI uses `npm ci`; otherwise it falls back to `npm install`.
+- Snyk: To enable, add repository secret `SNYK_TOKEN`; otherwise it will be skipped with a message.
+- Docker: Local Docker is optional; the advanced workflow builds in CI using Buildx.
 
 ## 🚀 Getting Started
 
